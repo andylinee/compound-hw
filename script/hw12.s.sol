@@ -16,6 +16,7 @@ contract HW12Script is Script {
     ComptrollerG7 comptroller;
     CErc20Delegate impl;
     WhitePaperInterestRateModel model;
+    uint256 initialExchangeRateMantissa;
     Unitroller unitroller;
     SimplePriceOracle oracle;
 
@@ -25,6 +26,7 @@ contract HW12Script is Script {
         token = new AndyToken();
         impl = new CErc20Delegate();
         model = new WhitePaperInterestRateModel(0, 0);
+        initialExchangeRateMantissa = 1e18;
         comptroller = new ComptrollerG7();
         unitroller = new Unitroller();
         oracle = new SimplePriceOracle();
@@ -34,15 +36,15 @@ contract HW12Script is Script {
         ComptrollerG7 comptrollerProxy = ComptrollerG7(address(unitroller));
         comptrollerProxy._setPriceOracle(oracle);
 
-        new CErc20Delegator(
+        CErc20Delegator cErc20 = new CErc20Delegator(
             address(token),
             comptrollerProxy,
             model,
-            1e18,
+            initialExchangeRateMantissa,
             "Compound Andy Token",
             "cANDY",
             18,
-            payable(0x0813CFFbDa292c1bC3D42868ff2b0f8c43F64da6),
+            payable(address(this)),
             address(impl),
             new bytes(0)
         );
